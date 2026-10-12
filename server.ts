@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 // 1. 初始化服务和数据库客户端
 const app = express();
 const prisma = new PrismaClient();
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 // 2. 配置中间件（相当于全局拦截器）
 app.use(cors());          // 允许前端跨域访问
@@ -92,7 +92,7 @@ app.delete('/todos/:id', async (req, res) => {
     }
 });
 
-// 3. 启动监听
-app.listen(PORT, () => {
-    console.log(`🚀 服务已启动！地址: http://localhost:${PORT}`);
+// 3. 启动监听（'0.0.0.0' 允许云服务器接收来自公网的请求）
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 服务已启动！端口: ${PORT}`);
 });
