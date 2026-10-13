@@ -14,3 +14,11 @@ model Todo {
   isCompleted Boolean  @default(false)               // 是否完成（布尔值，默认未完成）
   createdAt   DateTime @default(now())               // 创建时间（默认当前时间）
 }
+
+// 吉趣盒【真心话大冒险】题库表
+model Question {
+  id        Int      @id @default(autoincrement())
+  type      String   // 'truth' (真心话) 或 'dare' (大冒险)
+  content   String   // 题目内容
+  createdAt DateTime @default(now())
+}
