@@ -83,15 +83,24 @@ app.delete('/todos/:id', async (req, res) => {
 // 2. 新增：吉趣盒【真心话大冒险】题库接口
 // =================================================================
 
-// 接口 A：随机获取一道题目 (GET /questions/random?type=truth 或 ?type=dare)
+// 接口 A：随机获取一道题目 (GET /questions/random?type=truth 或 ?type=dare&excludeId=1)
 app.get('/questions/random', async (req, res) => {
     try {
         const type = (req.query.type as string) || 'truth';
+        const excludeId = req.query.excludeId ? Number(req.query.excludeId) : undefined;
 
-        // 查找对应类型的所有题目
-        const list = await prisma.question.findMany({
-            where: { type },
+        // 查找对应类型题目（排除上一道正在看的题目，保证绝不连续重复）
+        let list = await prisma.question.findMany({
+            where: {
+                type,
+                ...(excludeId ? { id: { not: excludeId } } : {}),
+            },
         });
+
+        // 如果排除后为空（比如该分类只有1道题），则回退查全部
+        if (list.length === 0) {
+            list = await prisma.question.findMany({ where: { type } });
+        }
 
         if (list.length === 0) {
             return res.json({
